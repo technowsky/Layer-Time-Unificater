@@ -2,6 +2,7 @@ import sys
 import os
 from PySide6.QtWidgets import QWidget, QApplication, QLabel, QGridLayout
 from PySide6.QtCore import Qt
+from classes.model import *
 
 #Class hierarchy:
 #   model 1--->* layer
@@ -43,6 +44,7 @@ if __name__ == "__main__":
     #for name, value in os.environ.items():
     #    print("{0}: {1}".format(name, value))
     
-    print(sys.argv[1])
-    print(get_file_content(sys.argv[1]))
+    #print(sys.argv[1])
+    print("sys.executable was", sys.executable)
+    gcode_model = model(get_file_content(sys.argv[1]))
     sys.exit(app.exec())
