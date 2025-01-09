@@ -3,6 +3,7 @@ class parameter:
         self.type = None
         self.name = None
         self.value = None
+        #print(param_str)
 
         if "=" in param_str:
             self.type = "Klipper"
@@ -14,4 +15,6 @@ class parameter:
             self.value = param_str[1:]
 
         #print(self.type, self.name, self.value)
+    def __str__(self):
+        return str(self.name)+str(self.value) if self.type == "GCode" else str(self.name)+"="+str(self.value)
 

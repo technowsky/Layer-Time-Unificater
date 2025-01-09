@@ -4,8 +4,18 @@ class model:
     def __init__(self, gcode):
         self.info = self.get_info_from_gcode(gcode)
         #print(self.info)
-        self.layers = self.get_layers_from_gcode(gcode)
+        self.x_min = 100000000
+        self.x_max = -100000000
+        self.y_min = 100000000
+        self.y_max = -100000000
 
+        self.layers = self.get_layers_from_gcode(gcode)
+        self.no_layers = len(self.layers)
+
+        #print(self.layers[1].points)
+        #print(self.layers[1].max_x_point, self.layers[1].min_x_point, self.layers[1].max_y_point, self.layers[1].min_y_point)
+
+        #print("Max X:",self.x_max,"Min X:",self.x_min,"Max Y:",self.y_max,"Min Y:",self.y_min)
 
     def get_info_from_gcode(self, gcode):
         #Get info about printing file from orca slicer gcode file
@@ -28,5 +38,13 @@ class model:
         layer_tab = []
         exec_block = gcode.split("; EXECUTABLE_BLOCK_START")[1].split("; EXECUTABLE_BLOCK_END")[0]
         layer_gcode = exec_block.split(";LAYER_CHANGE")
-        for l in layer_gcode: layer_tab.append(layer(l))
-        print(len(layer_tab))
+        for l in layer_gcode:
+            new_layer = layer(l)
+            layer_tab.append(new_layer)
+            if new_layer and new_layer.points:
+                if new_layer.max_x_point > self.x_max: self.x_max = new_layer.max_x_point
+                if new_layer.min_x_point < self.x_min: self.x_min = new_layer.min_x_point
+                if new_layer.max_y_point > self.y_max: self.y_max = new_layer.max_y_point
+                if new_layer.min_y_point < self.y_min: self.y_min = new_layer.min_y_point
+
+        return layer_tab
