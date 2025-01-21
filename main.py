@@ -46,19 +46,22 @@ class main_window(QWidget):
         self.add_button = QPushButton("/\\")
         self.down_button = QPushButton("\\/")
         self.layer_number_text_box = QLineEdit()
+        self.layer_time_display = QLabel("Layer time: -")
 
         self.box_layout = QVBoxLayout()
         self.box_layout.addWidget(self.add_button)
         self.box_layout.addWidget(self.layer_number_text_box)
         self.box_layout.addWidget(self.down_button)
 
-        self.layout.addWidget(self.text_label, 0, 0, Qt.AlignCenter)
-        self.layout.addWidget(self.exec_path, 1, 0, Qt.AlignCenter)
+        #self.layout.addWidget(self.text_label, 0, 0, Qt.AlignCenter)
+
+        self.layout.addWidget(self.layer_time_display, 1,0, Qt.AlignCenter)
+        self.layout.addWidget(self.exec_path, 0, 0, Qt.AlignCenter)
         self.layout.addWidget(self.close_button, 3, 0)
         self.layout.addWidget(self.change_button, 3, 1)
         self.layout.addWidget(self.plot, 2, 0)
         self.layout.addLayout(self.box_layout, 2,1)
-
+        
         #self.close_button.clicked.connect(self.restart)
         self.change_button.clicked.connect(self.display_plot)
         self.add_button.clicked.connect(self.layer_up)
@@ -74,7 +77,7 @@ class main_window(QWidget):
 
     def layer_down(self):
         curr_layer_no = int(self.layer_number_text_box.text())
-        if curr_layer_no > 2:
+        if curr_layer_no > 1:
             new_layer_no = curr_layer_no - 1
             self.layer_number_text_box.setText(str(new_layer_no))
             self.display_layer(new_layer_no)
@@ -94,6 +97,7 @@ class main_window(QWidget):
     def display_layer(self, layer_no):
         if self.gcode_model and len(self.gcode_model.layers) > layer_no and 0 < layer_no:
             layer = self.gcode_model.layers[layer_no]
+            self.layer_time_display.setText("Layer time: "+str(layer.layer_time))
 
             self.plot.axes.cla()
             self.plot.axes.set_xlim(self.gcode_model.x_min-2, self.gcode_model.x_max+2)

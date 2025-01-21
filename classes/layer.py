@@ -7,8 +7,11 @@ class layer:
         self.layer_height = self.get_layer_height()
         self.model_height = self.get_model_height()
         self.layer_time = self.calculate_layer_time()
+        self.layer_time = self.model_height
         self.commands = self.get_commands()
+        self.default_speed = None
         self.points = self.create_layer_points()
+        self.moves = self.get_moves()
         self.max_x_point = float(max(map(lambda x: x[0], self.points))) if self.points else None
         self.min_x_point = float(min(map(lambda x: x[0], self.points))) if self.points else None
         self.max_y_point = float(max(map(lambda x: x[1], self.points))) if self.points else None
@@ -22,6 +25,8 @@ class layer:
 
     def calculate_layer_time(self):
         #Calculate layer time from layer class. May move to layer class.
+        def get_distance(p1, p2):
+            ...
         return None
 
     def get_layer_height(self):
@@ -39,7 +44,16 @@ class layer:
         return None
 
     def get_commands(self):
-        return list(map(lambda l: command(l), filter(lambda x: x!="" and x!="\n", self.gcode.split("\n"))))
+        commands = list(map(lambda l: command(l), filter(lambda x: x!="" and x!="\n", self.gcode.split("\n"))))
+        speeds = list(map(lambda c: c.gcode_command, filter(
+            lambda c: c.command == "G1" or c.command == "G0" and
+            c.get_parameter("F") and
+            not c.get_parameter("E") and
+            not c.get_parameter("Z")
+            , commands)))
+        self.default_speed = speeds[0].get_parameter("F") if speeds else 1000
+        print(self.default_speed)
+        return commands
 
     def create_layer_points(self):
         points = list(map(self.return_point, self.commands))
@@ -67,3 +81,8 @@ class layer:
         fig, ax = plt.subplots()
         ax.plot(list(map(lambda p: float(p[0]), self.points)), list(map(lambda p: float(p[1]), self.points)))
         plt.show()
+
+    def get_moves(self):
+        for i in range(len(self.commands)-1):
+            p1 = self.return_point(self.command[i])
+            p2 = self.return_point(self.commands[i+1])
