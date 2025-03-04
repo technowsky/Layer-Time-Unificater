@@ -108,19 +108,6 @@ class main_window(QWidget):
 
 
     def display_plot(self):
-        #array_x = []
-        #array_y = []
-        #for i in range(5):
-        #    array_x.append(random.randint(1, 100))
-        #    array_y.append(random.randint(1, 100))
-        #print(array_x)
-        #print(array_y)
-#
-        #self.plot.axes.cla()
-        #self.plot.axes.plot(array_x, array_y)
-        #self.plot.axes.set_aspect(1)
-        #self.plot.draw()
-
         layer = random.randint(0, len(self.gcode_model.layers))
         self.layer_number_text_box.setText(str(layer))
         self.display_layer(layer)

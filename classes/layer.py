@@ -2,7 +2,10 @@ from classes.command import *
 import matplotlib.pyplot as plt
 
 class layer:
-    def __init__(self, gcode):
+    def __init__(self, gcode, l_num):
+        self.layer_number = l_num
+        self.prev_layer = None
+        self.next_layer = None
         self.gcode = gcode
         self.layer_height = self.get_layer_height()
         self.model_height = self.get_model_height()
@@ -16,18 +19,11 @@ class layer:
         self.min_x_point = float(min(map(lambda x: x[0], self.points))) if self.points else None
         self.max_y_point = float(max(map(lambda x: x[1], self.points))) if self.points else None
         self.min_y_point = float(min(map(lambda x: x[1], self.points))) if self.points else None
-        #print(self.points)
-
-        #print(self.layer_height, self. model_height)
-
-        #print(list(map(lambda c: c.get_full_command_str() ,self.get_commands_by_name("G1")+self.get_commands_by_name("G0"))))
-        #print("Max X:",self.max_x_point,"Min X:",self.min_x_point,"Max Y:",self.max_y_point,"Min Y:",self.min_y_point)
 
     def calculate_layer_time(self):
         #Calculate layer time from layer class. May move to layer class.
-        def get_distance(p1, p2):
-            ...
-        return None
+        ...
+
 
     def get_layer_height(self):
         for l in self.gcode.split("\n"):
@@ -45,14 +41,6 @@ class layer:
 
     def get_commands(self):
         commands = list(map(lambda l: command(l), filter(lambda x: x!="" and x!="\n", self.gcode.split("\n"))))
-        speeds = list(map(lambda c: c.gcode_command, filter(
-            lambda c: c.command == "G1" or c.command == "G0" and
-            c.get_parameter("F") and
-            not c.get_parameter("E") and
-            not c.get_parameter("Z")
-            , commands)))
-        self.default_speed = speeds[0].get_parameter("F") if speeds else 1000
-        print(self.default_speed)
         return commands
 
     def create_layer_points(self):
@@ -84,5 +72,5 @@ class layer:
 
     def get_moves(self):
         for i in range(len(self.commands)-1):
-            p1 = self.return_point(self.command[i])
+            p1 = self.return_point(self.commands[i])
             p2 = self.return_point(self.commands[i+1])

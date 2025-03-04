@@ -35,16 +35,22 @@ class model:
 
     def get_layers_from_gcode(self, gcode):
         #Convert gcode to individual layers of print. Must write special layer class
+        prev_layer = None
+        next_layer = None
         layer_tab = []
         exec_block = gcode.split("; EXECUTABLE_BLOCK_START")[1].split("; EXECUTABLE_BLOCK_END")[0]
         layer_gcode = exec_block.split(";LAYER_CHANGE")
-        for l in layer_gcode:
-            new_layer = layer(l)
+        for index, l in enumerate(layer_gcode):
+            new_layer = layer(l, index)
+            if new_layer:
+                new_layer.prev_layer = prev_layer
+                if prev_layer: prev_layer.next_layer = new_layer
+                prev_layer = new_layer
             layer_tab.append(new_layer)
+            
             if new_layer and new_layer.points:
                 if new_layer.max_x_point > self.x_max: self.x_max = new_layer.max_x_point
                 if new_layer.min_x_point < self.x_min: self.x_min = new_layer.min_x_point
                 if new_layer.max_y_point > self.y_max: self.y_max = new_layer.max_y_point
                 if new_layer.min_y_point < self.y_min: self.y_min = new_layer.min_y_point
-
         return layer_tab
